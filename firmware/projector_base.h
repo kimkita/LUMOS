@@ -23,7 +23,6 @@ public:
     virtual bool project() = 0;
 
     virtual bool setProjectorCurrent(int current) = 0;
-
     virtual bool setProjectorExposure(int exposure) = 0;
 
     virtual bool setProjectorTriggerDlay(int dlay) = 0;
@@ -31,5 +30,7 @@ public:
     virtual bool setProjectorWorkingMode(int mode) = 0;
 
     virtual bool getCorrectExposure(int& exposureTime) {return false;}
+
+    virtual bool setProjectorMinTriggerIntervalTime(int minTriggerInterval) {return false;};
 
 };
