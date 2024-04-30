@@ -12,7 +12,7 @@
 #define SPI_READ_HEAD 0x8080
 #define CV_2PI 6.283185307179586476925286766559
 #define PERIOD_POINT    4096
-#define LASER_NUM_BUFFER 50 //代表的是用于缓冲的不投光的部分
+#define LASER_NUM_BUFFER 250 //代表的是用于缓冲的不投光的部分
 #define SHIFT_OFFSET 0
 
 #define ROLLING_US_PER_ROW 7.79

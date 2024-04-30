@@ -90,7 +90,7 @@ add_executable(camera_server
                     camera_mvs.cpp
                     scan3d.cpp
                     camera.cpp
-		    camera_mipi.cpp
+		            camera_mipi.cpp
                     merge_hdr.cu
                     projector_base.cpp
                     projector_ainstec.cpp

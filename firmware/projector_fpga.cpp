@@ -2,10 +2,12 @@
 #include "projector_fpga.h"
 #include "easylogging++.h"
 #include <unistd.h>
-#define MAX_LASER_CURRENT 22400//32000
+#define MAX_LASER_CURRENT 65535//32000
 #define MIN_LASER_CURRENT 0
-#define MIN_SCANER_VOLTAGE 0
-#define MAX_SCANER_VOLTAGE 65535
+#define SCAN_ADDITION 32
+#define SCAN_ADDITION_TIMES 2047
+uint32_t MIN_SCANER_VOLTAGE = 0;
+uint32_t MAX_SCANER_VOLTAGE = MIN_SCANER_VOLTAGE + SCAN_ADDITION * SCAN_ADDITION_TIMES;
 
 ProjectorTemp::ProjectorTemp()
 {
@@ -144,7 +146,7 @@ bool ProjectorTemp::setProjectorWorkingMode(int serial_num)
             // data_ret[count * 128 + j] = 0x8000;
             std::cout << data_ret[count * 128 + j] << std::endl;
         }
-        // data_ret[count * 128 + 127] = 0;
+        data_ret[count * 128 + ((int)SCAN_ADDITION_TIMES - 1) / 16] = 0;
     }
 
 
@@ -409,12 +411,14 @@ void ProjectorTemp::camera_reg_setting() {
     FpgaSpi_Write((uint32_t)0x0013, (uint32_t)18);
     FpgaSpi_Write((uint32_t)0x0014, (uint32_t)1);
     FpgaSpi_Write((uint32_t)0x0015, (uint32_t)2048);
-    FpgaSpi_Write((uint32_t)0x0016, (uint32_t)2048);
+    FpgaSpi_Write((uint32_t)0x0016, (uint32_t)SCAN_ADDITION_TIMES);
     FpgaSpi_Write((uint32_t)0x0017, (uint32_t)0);
     FpgaSpi_Write((uint32_t)0x0018, (uint32_t)2248);
-    FpgaSpi_Write((uint32_t)0x0019, (uint32_t)0);
+    FpgaSpi_Write((uint32_t)0x0019, (uint32_t)MIN_SCANER_VOLTAGE);
     FpgaSpi_Write((uint32_t)0x001a, (uint32_t)32);
-    FpgaSpi_Write((uint32_t)0x001b, (uint32_t)32);
+
+    // 计算扫描的增量
+    FpgaSpi_Write((uint32_t)0x001b, (uint32_t)SCAN_ADDITION);
 
     LOG(INFO) << "init end";
 }
@@ -549,7 +553,6 @@ bool ProjectorTemp::setProjectorFrequency(int freq)
     FpgaSpi_Write(0x0017, roll_back_point_nums_int); // 启动激光的点数
     FpgaSpi_Write(0x0018, roll_back_point_nums_int); // 触发相机点数
     FpgaSpi_Write(0x001a, rool_back_step); // 
-
     return true;
 }
 
